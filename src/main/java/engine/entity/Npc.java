@@ -133,58 +133,6 @@ public class Npc extends Entity {
 
 	}
 
-//private void drawNpcTest() {
-//		
-//		Image img = null;
-//		
-//		switch(direction) {
-//		case UP:
-//			if(spriteNum == 1)
-//				img = up1;
-//			else if(spriteNum == 2)
-//				img = up2;
-//			else if(spriteNum == 3)
-//				img = up3;
-//			else
-//				img = up1;
-//			break;
-//		case DOWN:
-//			if(spriteNum == 1)
-//				img = down1;
-//			else if(spriteNum == 2)
-//				img = down2;
-//			else if(spriteNum == 3)
-//				img = down3;
-//			else
-//				img = down1;
-//			break;
-//		case LEFT:
-//			if(spriteNum == 1)
-//				img = left1;
-//			else if(spriteNum == 2)
-//				img = left2;
-//			else if(spriteNum == 3)
-//				img = left3;
-//			else 
-//				img = left1;
-//			break;
-//		case RIGHT:
-//			if(spriteNum == 1)
-//				img = right1;
-//			else if(spriteNum == 2)
-//				img = right2;
-//			else if(spriteNum == 3)
-//				img = right3;
-//			else
-//				img = right1;
-//			break;
-//		}
-//
-//	
-//		
-//		context.drawImage(img, worldX, worldY, GameVariables.TILE_SIZE * GameVariables.ESCALADO_PLAYER, GameVariables.TILE_SIZE * GameVariables.ESCALADO_PLAYER);
-//
-//	}
 
 	/**
 	 * Cada cierta cantidad de updates el oso cambiará de direccion a una random dependiendo del valor que tenga random en ese momento.
@@ -193,6 +141,7 @@ public class Npc extends Entity {
 	
 	public void update() {
 		contador++;
+		gl.getCollisionChecker().checkCollision(this, gl.getPlayer());
 		if (contador == 60) {
 			Random random = new Random();
 			int i = random.nextInt(100) + 1;

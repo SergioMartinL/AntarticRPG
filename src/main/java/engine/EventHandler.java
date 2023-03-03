@@ -1,10 +1,9 @@
 package engine;
 
 import java.io.File;
+import java.util.ConcurrentModificationException;
 import java.util.Timer;
-import java.util.TimerTask;
 
-import engine.entity.Player;
 import javafx.scene.shape.Rectangle;
 import threads.GameLoop;
 
@@ -58,72 +57,74 @@ public class EventHandler {
 	*/
 
 	public void checkEventChangeMap() {
-		
-		//De mapa 1 a mapa 2
-		if (hit(8, 1, Direction.UP) && numMap == 1) {
-			numMap=2;
-			System.out.println("hit");
-			File nuevoMapa = new File("src/main/resources/maps/mapa2.tmj");
-			gl.getTileHandler().setMapFile(nuevoMapa);
-			gl.getTileHandler().loadLayers(nuevoMapa);
-			isMapChange = true;
+		try {
+			//De mapa 1 a mapa 2
+			if (hit(8, 1, Direction.UP) && numMap == 1) {
+				
+				numMap=2;
+				System.out.println("hit");
+				File nuevoMapa = new File("src/main/resources/maps/mapa2.tmj");
+				gl.getTileHandler().setMapFile(nuevoMapa);
+				gl.getTileHandler().loadLayers(nuevoMapa);
+				isMapChange = true;
+				
+			}
+			// De mapa 2 a mapa 1
+			if (hit(6, 23, Direction.DOWN) && numMap == 2) {
+				numMap=1;
+				System.out.println("hit");
+				File nuevoMapa = new File("src/main/resources/maps/mapa1.tmj");
+				gl.getTileHandler().setMapFile(nuevoMapa);
+				gl.getTileHandler().loadLayers(nuevoMapa);
+				isMapChange = true;
+				
+			}
+			// De mapa 2 a mapa 3
+			if (hit(7, 1, Direction.UP) && numMap == 2) {
+				numMap=3;
+				System.out.println(numMap);
+				File nuevoMapa = new File("src/main/resources/maps/mapa3.tmj");
+				gl.getTileHandler().setMapFile(nuevoMapa);
+				gl.getTileHandler().loadLayers(nuevoMapa);
+				isMapChange = true;
+				
+			}
+			// De mapa 2 a mapa 4
+			if (hit(18, 1, Direction.UP) && numMap == 2) {
+				numMap=4;
+				System.out.println(numMap);
+				File nuevoMapa = new File("src/main/resources/maps/mapa4.tmj");
+				gl.getTileHandler().setMapFile(nuevoMapa);
+				gl.getTileHandler().loadLayers(nuevoMapa);
+				isMapChange = true;
+				
+			}
+			// De mapa 3 a mapa 2
 			
-		}
-		// De mapa 2 a mapa 1
-		if (hit(6, 23, Direction.DOWN) && numMap == 2) {
-			numMap=1;
-			System.out.println("hit");
-			File nuevoMapa = new File("src/main/resources/maps/mapa1.tmj");
-			gl.getTileHandler().setMapFile(nuevoMapa);
-			gl.getTileHandler().loadLayers(nuevoMapa);
-			isMapChange = true;
+			if (hit(7, 23, Direction.DOWN) && numMap == 3) {
+				System.out.println("De mapa 3 a mapa 2");
+				numMap=6;
+				System.out.println(numMap);
+				File nuevoMapa = new File("src/main/resources/maps/mapa2.tmj");
+				gl.getTileHandler().setMapFile(nuevoMapa);
+				gl.getTileHandler().loadLayers(nuevoMapa);
+				isMapChange = true;
+				
+			}
 			
-		}
-		// De mapa 2 a mapa 3
-		if (hit(7, 1, Direction.UP) && numMap == 2) {
-			numMap=3;
-			System.out.println(numMap);
-			File nuevoMapa = new File("src/main/resources/maps/mapa3.tmj");
-			gl.getTileHandler().setMapFile(nuevoMapa);
-			gl.getTileHandler().loadLayers(nuevoMapa);
-			isMapChange = true;
+			// De mapa 4 a mapa 2
 			
-		}
-		// De mapa 2 a mapa 4
-		if (hit(18, 1, Direction.UP) && numMap == 2) {
-			numMap=4;
-			System.out.println(numMap);
-			File nuevoMapa = new File("src/main/resources/maps/mapa4.tmj");
-			gl.getTileHandler().setMapFile(nuevoMapa);
-			gl.getTileHandler().loadLayers(nuevoMapa);
-			isMapChange = true;
-			
-		}
-		// De mapa 3 a mapa 2
-
-		if (hit(7, 23, Direction.DOWN) && numMap == 3) {
-			System.out.println("De mapa 3 a mapa 2");
-			numMap=6;
-			System.out.println(numMap);
-			File nuevoMapa = new File("src/main/resources/maps/mapa2.tmj");
-			gl.getTileHandler().setMapFile(nuevoMapa);
-			gl.getTileHandler().loadLayers(nuevoMapa);
-			isMapChange = true;
-			
-		}
-		
-		// De mapa 4 a mapa 2
-		
-		if (hit(18, 23, Direction.DOWN) && numMap == 4) {
-			System.out.println("De mapa 4 a mapa 2");
-			numMap=5;
-			System.out.println(numMap);
-			File nuevoMapa = new File("src/main/resources/maps/mapa2.tmj");
-			gl.getTileHandler().setMapFile(nuevoMapa);
-			gl.getTileHandler().loadLayers(nuevoMapa);
-			isMapChange = true;
-			
-		}
+			if (hit(18, 23, Direction.DOWN) && numMap == 4) {
+				System.out.println("De mapa 4 a mapa 2");
+				numMap=5;
+				System.out.println(numMap);
+				File nuevoMapa = new File("src/main/resources/maps/mapa2.tmj");
+				gl.getTileHandler().setMapFile(nuevoMapa);
+				gl.getTileHandler().loadLayers(nuevoMapa);
+				isMapChange = true;
+				
+			}
+		} catch(ConcurrentModificationException ex) {}
 
 	}
 
@@ -134,7 +135,7 @@ public class EventHandler {
 	
 	public void damagePit() {
 
-		gl.player.damage(0.5);
+		gl.player.damage(0.25);
 	}
 	
 	/**

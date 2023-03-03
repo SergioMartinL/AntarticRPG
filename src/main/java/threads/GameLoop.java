@@ -218,4 +218,13 @@ public class GameLoop extends AnimationTimer {
 		return keyHandler;
 	}
 
+	public AssetSetter getaSetter() {
+		return aSetter;
+	}
+
+	public void setaSetter(AssetSetter aSetter) {
+		this.aSetter = aSetter;
+	}
+
+	
 }

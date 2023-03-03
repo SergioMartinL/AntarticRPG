@@ -29,7 +29,7 @@ public class TileHandler extends Thread {
 	private Tile[] tiles;
 	private GraphicsContext context;
 	private Player p;
-	private ArrayList<Npc> npc;
+	private ArrayList<Npc> npcs;
 	private File mapFile;
 
 
@@ -51,7 +51,7 @@ public class TileHandler extends Thread {
 		mapNum = new int[GameVariables.MAX_WORLD_COL][GameVariables.MAX_WORLD_ROW];
 		this.context = loop.getCanvas().getGraphicsContext2D();
 		this.p = p;
-		this.npc = npc;
+		this.npcs = npc;
 
 		water = new Image(getClass().getResourceAsStream("/assets/textureImages/water.png"));
 
@@ -60,6 +60,137 @@ public class TileHandler extends Thread {
 		mapFile = new File("src/main/resources/maps/mapa1.tmj");
 		loadLayers(mapFile);
 	}
+
+	
+	public void loadLayers(File mapFile) {
+		String linea;
+		String nums[] = null;
+
+		int col = 0;
+		int row = 0;
+		int currentLayer = 0;
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(mapFile))) {
+			layers.add(mapNum);
+			while ((linea = reader.readLine()) != null) {
+				if (linea.isBlank()) {
+					col = 0;
+					row = 0;
+					mapNum = new int[GameVariables.MAX_SCREEN_COL][GameVariables.MAX_SCREEN_ROW];
+					layers.add(mapNum);
+					currentLayer++;
+					continue;
+				}
+				linea = linea.replace(",", "");
+				nums = linea.trim().split(" ");
+				for (int i = 0; i < nums.length && i < GameVariables.MAX_WORLD_COL; i++) {
+					layers.get(currentLayer)[col][row] = Integer.parseInt(nums[i]);
+					col++;
+				}
+				col = 0;
+				row++;
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void paint() {
+
+		context.clearRect(0, 0, GameVariables.SCREEN_WIDTH, GameVariables.SCREEN_HEIGHT);
+		context.drawImage(water, 0, 0, GameVariables.SCREEN_WIDTH, GameVariables.SCREEN_HEIGHT);
+		
+		for (int worldRow = 0; worldRow < GameVariables.MAX_WORLD_ROW; worldRow++) {
+			for (int worldCol = 0; worldCol < GameVariables.MAX_WORLD_COL; worldCol++) {
+				int tileNum = layers.get(0)[worldCol][worldRow];
+
+				int worldX = worldCol * GameVariables.TILE_SIZE;
+				int worldY = worldRow * GameVariables.TILE_SIZE;
+
+				int screenX = worldX - loop.player.getWorldX() + loop.player.getScreenX();
+				int screenY = worldY - loop.player.getWorldY() + loop.player.getScreenY();
+				
+				context.drawImage(tiles[tileNum].img, screenX, screenY, GameVariables.TILE_SIZE,
+						GameVariables.TILE_SIZE);
+				
+			}
+
+		}
+
+		for (int worldRow = 0; worldRow < GameVariables.MAX_WORLD_ROW; worldRow++) {
+			for (int worldCol = 0; worldCol < GameVariables.MAX_WORLD_COL; worldCol++) {
+				int tileNum2 = layers.get(1)[worldCol][worldRow];
+
+				int worldX = worldCol * GameVariables.TILE_SIZE;
+				int worldY = worldRow * GameVariables.TILE_SIZE;
+
+				int screenX = worldX - loop.player.getWorldX() + loop.player.getScreenX();
+				int screenY = worldY - loop.player.getWorldY() + loop.player.getScreenY();
+				
+				context.drawImage(tiles[tileNum2].img, screenX, screenY, GameVariables.TILE_SIZE,
+						GameVariables.TILE_SIZE);
+				
+			}
+
+		}
+		p.paint();
+		for(Npc npc : npcs) {
+			npc.paint();
+		}
+		
+		for (int worldRow = 0; worldRow < GameVariables.MAX_WORLD_ROW; worldRow++) {
+			for (int worldCol = 0; worldCol < GameVariables.MAX_WORLD_COL; worldCol++) {
+				int tileNum3 = layers.get(2)[worldCol][worldRow]; 
+				
+				int worldX = worldCol * GameVariables.TILE_SIZE;
+				int worldY = worldRow * GameVariables.TILE_SIZE;
+
+				int screenX = worldX - loop.player.getWorldX() + loop.player.getScreenX();
+				int screenY = worldY - loop.player.getWorldY() + loop.player.getScreenY();
+				
+				context.drawImage(tiles[tileNum3].img, screenX, screenY, GameVariables.TILE_SIZE,
+						GameVariables.TILE_SIZE);
+				
+			}
+		}
+			
+//			light.paint();
+//			
+//			painted = true;
+//
+//		}
+	}
+	
+	public File getMapFile() {
+		return mapFile;
+	}
+
+	public void setMapFile(File mapFile) {
+		this.mapFile = mapFile;
+	}
+
+	public void setLight(Light light) {
+		this.light = light;
+	}
+
+	public List<int[][]> getLayers() {
+		return layers;
+	}
+
+	public Tile[] getTiles() {
+		return tiles;
+	}
+	
+	
+	public ArrayList<Npc> getNPCs() {
+		return npcs;
+	}
+
+
+	public void setNpcs(ArrayList<Npc> npcs) {
+		this.npcs = npcs;
+	}
+
 
 	private void initStaticEntities() {
 		for (int i = 0; i < GameVariables.MAX_TILES_CONT; i++) {
@@ -324,123 +455,5 @@ public class TileHandler extends Thread {
 		}
 	}
 
-	public void loadLayers(File mapFile) {
-		String linea;
-		String nums[] = null;
-
-		int col = 0;
-		int row = 0;
-		int currentLayer = 0;
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(mapFile))) {
-			layers.add(mapNum);
-			while ((linea = reader.readLine()) != null) {
-				if (linea.isBlank()) {
-					col = 0;
-					row = 0;
-					mapNum = new int[GameVariables.MAX_SCREEN_COL][GameVariables.MAX_SCREEN_ROW];
-					layers.add(mapNum);
-					currentLayer++;
-					continue;
-				}
-				linea = linea.replace(",", "");
-				nums = linea.trim().split(" ");
-				for (int i = 0; i < nums.length && i < GameVariables.MAX_WORLD_COL; i++) {
-					layers.get(currentLayer)[col][row] = Integer.parseInt(nums[i]);
-					col++;
-				}
-				col = 0;
-				row++;
-			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void paint() {
-
-		context.clearRect(0, 0, GameVariables.SCREEN_WIDTH, GameVariables.SCREEN_HEIGHT);
-		context.drawImage(water, 0, 0, GameVariables.SCREEN_WIDTH, GameVariables.SCREEN_HEIGHT);
-		
-		for (int worldRow = 0; worldRow < GameVariables.MAX_WORLD_ROW; worldRow++) {
-			for (int worldCol = 0; worldCol < GameVariables.MAX_WORLD_COL; worldCol++) {
-				int tileNum = layers.get(0)[worldCol][worldRow];
-
-				int worldX = worldCol * GameVariables.TILE_SIZE;
-				int worldY = worldRow * GameVariables.TILE_SIZE;
-
-				int screenX = worldX - loop.player.getWorldX() + loop.player.getScreenX();
-				int screenY = worldY - loop.player.getWorldY() + loop.player.getScreenY();
-				
-				context.drawImage(tiles[tileNum].img, screenX, screenY, GameVariables.TILE_SIZE,
-						GameVariables.TILE_SIZE);
-				
-			}
-
-		}
-
-		for (int worldRow = 0; worldRow < GameVariables.MAX_WORLD_ROW; worldRow++) {
-			for (int worldCol = 0; worldCol < GameVariables.MAX_WORLD_COL; worldCol++) {
-				int tileNum2 = layers.get(1)[worldCol][worldRow];
-
-				int worldX = worldCol * GameVariables.TILE_SIZE;
-				int worldY = worldRow * GameVariables.TILE_SIZE;
-
-				int screenX = worldX - loop.player.getWorldX() + loop.player.getScreenX();
-				int screenY = worldY - loop.player.getWorldY() + loop.player.getScreenY();
-				
-				context.drawImage(tiles[tileNum2].img, screenX, screenY, GameVariables.TILE_SIZE,
-						GameVariables.TILE_SIZE);
-				
-			}
-
-		}
-		p.paint();
-		for(Npc npc : npc) {
-			npc.paint();
-		}
-		
-		for (int worldRow = 0; worldRow < GameVariables.MAX_WORLD_ROW; worldRow++) {
-			for (int worldCol = 0; worldCol < GameVariables.MAX_WORLD_COL; worldCol++) {
-				int tileNum3 = layers.get(2)[worldCol][worldRow]; 
-				
-				int worldX = worldCol * GameVariables.TILE_SIZE;
-				int worldY = worldRow * GameVariables.TILE_SIZE;
-
-				int screenX = worldX - loop.player.getWorldX() + loop.player.getScreenX();
-				int screenY = worldY - loop.player.getWorldY() + loop.player.getScreenY();
-				
-				context.drawImage(tiles[tileNum3].img, screenX, screenY, GameVariables.TILE_SIZE,
-						GameVariables.TILE_SIZE);
-				
-			}
-		}
-			
-//			light.paint();
-//			
-//			painted = true;
-//
-//		}
-	}
-	
-	public File getMapFile() {
-		return mapFile;
-	}
-
-	public void setMapFile(File mapFile) {
-		this.mapFile = mapFile;
-	}
-
-	public void setLight(Light light) {
-		this.light = light;
-	}
-
-	public List<int[][]> getLayers() {
-		return layers;
-	}
-
-	public Tile[] getTiles() {
-		return tiles;
-	}
 
 }

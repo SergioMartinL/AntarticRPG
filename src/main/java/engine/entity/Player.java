@@ -1,10 +1,21 @@
+/**
+ * Clase player donde se crea un jugador, carga sus texturas y checkea continuamente las colisiones del movimiento
+ */
+
 package engine.entity;
 
+import java.util.Optional;
+
+import dad.App;
 import engine.Animation;
 import engine.Direction;
 import engine.GameVariables;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
 import threads.GameLoop;
@@ -20,6 +31,8 @@ public class Player extends Entity {
 	private final int layer = 0;
 	private Animation animation;
 	private double hearts;
+	private int lastX;
+	private int lastY;
 
 	public Player(Canvas c, GameLoop loop) {
 		super(loop);
@@ -48,34 +61,47 @@ public class Player extends Entity {
 		hearts = GameVariables.MAX_HEARTS;
 
 	}
+	
+	public void stop() {
+		setWorldX(lastX);
+		setWorldY(lastY);
+		idle = true;
+	}
 
 	public void update(long timeDifference) {
+		lastX = worldX;
+		lastY = worldY;
 		//vuelta al mapa 1 desde el mapa 2
 		if (loop.geteHandler().isMapChange && loop.geteHandler().getNumMap()==1) {
-			worldX = GameVariables.TILE_SIZE * 8;
+			loop.getaSetter().setNpc();
+			worldX = GameVariables.TILE_SIZE * 9;
 			worldY = GameVariables.TILE_SIZE * 1;
 			loop.geteHandler().setMapChange(false);
 		}
 		//vuelta al mapa 2 desde el mapa 1
 		if (loop.geteHandler().isMapChange && loop.geteHandler().getNumMap()==2) {
+			loop.getaSetter().setNpc();
 			worldX = GameVariables.TILE_SIZE * 6;
 			worldY = GameVariables.TILE_SIZE * 23;
 			loop.geteHandler().setMapChange(false);
 		}
 		//vuelta al mapa 2 desde el mapa 3
 		if (loop.geteHandler().isMapChange && loop.geteHandler().getNumMap()==3) {
+			loop.getaSetter().setNpc();
 			worldX = GameVariables.TILE_SIZE * 7;
 			worldY = GameVariables.TILE_SIZE * 23;
 			loop.geteHandler().setMapChange(false);
 		}
 		//vuelta al mapa 4 desde el 2
 		if (loop.geteHandler().isMapChange && loop.geteHandler().getNumMap()==4) {
+			loop.getaSetter().setNpc();
 			worldX = GameVariables.TILE_SIZE * 18;
 			worldY = GameVariables.TILE_SIZE * 23;
 			loop.geteHandler().setMapChange(false);
 		}
 		//vuelta al mapa 2 desde el 4
 		if (loop.geteHandler().isMapChange && loop.geteHandler().getNumMap()==5) {
+			loop.getaSetter().setNpc();
 			loop.geteHandler().setNumMap(2);
 			worldX = GameVariables.TILE_SIZE * 18;
 			worldY = GameVariables.TILE_SIZE * 1;
@@ -83,6 +109,7 @@ public class Player extends Entity {
 		}
 		//vuelta al mapa 2 desde el 3
 		if (loop.geteHandler().isMapChange && loop.geteHandler().getNumMap()==6) {
+			loop.getaSetter().setNpc();
 			loop.geteHandler().setNumMap(2);
 			worldX = GameVariables.TILE_SIZE * 7;
 			worldY = GameVariables.TILE_SIZE * 1;
@@ -219,9 +246,17 @@ public class Player extends Entity {
 	public void damage(double damage) {
 		if (hearts > 0 && hearts != 0.5) {
 			hearts = hearts - damage;
+		} else {
+			hearts=0;
+			Alert a = new Alert(AlertType.ERROR);
+			a.setTitle("Antartic RPG");
+			a.setHeaderText("¡Has perdido!");
+			a.setContentText("Se generará un reporte de las estadísticas de tu partida.");
+			a.show();
+			loop.inGame = false;
+			App.primaryStage.close();
 		}
-	
-		
+			
 	}
 	public int getWorldX() {
 		return worldX;
@@ -251,6 +286,13 @@ public class Player extends Entity {
 		return hearts;
 	}
 
+	public void setWorldX(int worldX) {
+		this.worldX = worldX;
+	}
+	
+	public void setWorldY(int worldY) {
+		this.worldY = worldY;
+	}
 
 
 }
